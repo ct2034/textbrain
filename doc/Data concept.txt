@@ -1,0 +1,20 @@
+Data concept
+
+Document
+	source: (select source plugin) 
+		bookmarks-chrome
+		files-dropbox
+	url:
+		weburl for websites
+		fileurl for files
+			dropbox://link/to/file.txt
+	added:
+		(Date of adding)
+	indexed:
+		(Date of last indexing)
+	title:
+		(maybe filename or web title)
+	content:
+		(Parsed text)
+	content-keywords:
+		(TBA ...)

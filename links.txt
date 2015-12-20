@@ -1,0 +1,8 @@
+Python libs
+'''''''''''
+
+Natural Language Toolkit
+    http://www.nltk.org/index.html
+    
+Beautiful Soup
+    http://www.crummy.com/software/BeautifulSoup/

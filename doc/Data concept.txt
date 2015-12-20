@@ -4,10 +4,13 @@ Document
 	source: (select source plugin) 
 		bookmarks-chrome
 		files-dropbox
-	url:
+	global-url:
 		weburl for websites
 		fileurl for files
 			dropbox://link/to/file.txt
+	local-url:
+		bookmarks folder 
+		url on system
 	added:
 		(Date of adding)
 	indexed:
@@ -18,3 +21,5 @@ Document
 		(Parsed text)
 	content-keywords:
 		(TBA ...)
+	indexing-results:
+		(e.g. indexing took 300ms .. / indexing failed - kept old content)

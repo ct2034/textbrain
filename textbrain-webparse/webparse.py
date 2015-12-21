@@ -8,6 +8,7 @@ import flask
 import time
 import json
 import yaml
+import pymongo
 app = flask.Flask(__name__)
 
 
@@ -15,11 +16,26 @@ class webparse:
     def __init__(self):
         self.queue = []
         self.settings = self.load_config("settings.yaml")
+        self.db_collection = self.connect_to_db()
 
     def load_config(self, filen):
         stream = open(filen, 'r')
         docs = yaml.load_all(stream)
         return docs.next()
+
+    def connect_to_db(self):
+        # params
+        host = self.settings['mongodb']['host']
+        port = self.settings['mongodb']['port']
+        # user = self.settings['mongodb']['user']
+        # pw = self.settings['mongodb']['pw']
+        db = self.settings['mongodb']['db']
+        col = self.settings['mongodb']['col']
+        # connect
+        client = pymongo.MongoClient(host, port)
+        db = client[db]
+        collection = db[col]
+        return collection
 
     def start_server(self):
         port = os.getenv("PORT", 8080)
@@ -43,6 +59,12 @@ class webparse:
             end = time.time()
             print "Parsing of " + url + " took " + str(end - start) + "s"
             print " Text length: " + str(text.__len__())
+            if text:  # only succesfull parses
+                doc = {
+                    "url": url,
+                    "text": text
+                }
+                self.db_collection.insert_one(doc)
 
     @timeout(5)
     def from_url(self, url, parser):

@@ -7,15 +7,19 @@ import thread
 import flask
 import time
 import json
+import yaml
 app = flask.Flask(__name__)
 
 
 class webparse:
     def __init__(self):
-        pw = raw_input("Choose a passphrase ...")
-        # variables
-        self.pw = pw
         self.queue = []
+        self.settings = self.load_config("settings.yaml")
+
+    def load_config(filen):
+        stream = open(filen, 'r')
+        docs = yaml.load_all(stream)
+        return docs.next()
 
     def start_server(self):
         port = os.getenv("PORT", 8080)
@@ -29,7 +33,7 @@ class webparse:
             self.queue.append(url)
 
     def check_pw(self, pw_):
-        return (pw_ == self.pw)
+        return (pw_ == self.settings['passphrase'])
 
     def work_on_queue(self):
         if self.queue.__len__() != 0:
@@ -39,8 +43,6 @@ class webparse:
             end = time.time()
             print "Parsing of " + url + " took " + str(end - start) + "s"
             print " Text length: " + str(text.__len__())
-        # else:
-        #     print "Queue empty"
 
     @timeout(5)
     def from_url(self, url, parser):
@@ -74,7 +76,6 @@ class webparse:
             line.split("  "))
         # drop blank lines
         text = '\n'.join(chunk for chunk in chunks if chunk)
-
         return text
 
 

@@ -1,0 +1,7 @@
+---
+passphrase: werking
+mongodb:
+    host:   localhost
+    port:   27017
+    user:   root
+    pw:     password

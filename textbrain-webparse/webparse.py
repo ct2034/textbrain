@@ -1,3 +1,4 @@
+from timeout import timeout
 import os
 import bs4
 import urllib2
@@ -7,7 +8,6 @@ import flask
 import time
 import json
 app = flask.Flask(__name__)
-from timeout import timeout
 
 
 class webparse:
@@ -101,7 +101,6 @@ def api_queue_urls():
 def test():
     print str(flask.request.data)
     return ("ok", 200)
-
 
 if __name__ == "__main__":
     wp = webparse()

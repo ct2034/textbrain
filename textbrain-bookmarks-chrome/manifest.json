@@ -2,13 +2,16 @@
   "name": "Textbrain Bookmarks",
   "version": "0.1",
   "description": "TBA ...",
+  "icons": {
+    "1024": "ico_v1.png"
+  },
   "permissions": [
     "bookmarks"
   ],
   "browser_action": {
-      "default_title": "Textbrain Bookmarks",
-      "default_icon": "ico_v1.png",
-      "default_popup": "popup.html"
+    "default_title": "Textbrain Bookmarks",
+    "default_icon": "ico_v1.png",
+    "default_popup": "popup.html"
   },
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"

@@ -16,7 +16,7 @@ class webparse:
         self.queue = []
         self.settings = self.load_config("settings.yaml")
 
-    def load_config(filen):
+    def load_config(self, filen):
         stream = open(filen, 'r')
         docs = yaml.load_all(stream)
         return docs.next()

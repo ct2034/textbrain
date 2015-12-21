@@ -6,6 +6,17 @@ $(function() {
       return false;
     }
   });
+  chrome.storage.sync.get('pw', function(par) {
+    if(par.pw) {
+      $('#pw').val(par.pw);
+    }  
+  });
+  chrome.storage.sync.get('url', function(par) {
+    if(par.url) {
+      $('#url').val(par.url);
+    } 
+  });  
+  $('#result').innerHTML="A"
 });
 
 function getBookmarks() {
@@ -22,7 +33,9 @@ function getBookmarks() {
       for (i = 0; i < bookmarks.length; i++) {
         json_msg["urls"][i] = bookmarks[i].url;
       }
-      postRest("http://localhost:8080/api/queue_urls", JSON.stringify(json_msg));
+      postRest($('#url').val(), JSON.stringify(json_msg));
+      chrome.storage.sync.set({'pw': $('#pw').val()}, function() {});
+      chrome.storage.sync.set({'url': $('#url').val()}, function() {});
     });
 }
 

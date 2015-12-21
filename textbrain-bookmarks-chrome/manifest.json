@@ -6,7 +6,8 @@
     "1024": "ico_v1.png"
   },
   "permissions": [
-    "bookmarks"
+    "bookmarks",
+    "storage"
   ],
   "browser_action": {
     "default_title": "Textbrain Bookmarks",

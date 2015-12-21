@@ -7,6 +7,7 @@ import flask
 import time
 import json
 app = flask.Flask(__name__)
+from timeout import timeout
 
 
 class webparse:
@@ -31,16 +32,17 @@ class webparse:
         return (pw_ == self.pw)
 
     def work_on_queue(self):
-        if self.queue.__len__() == 0:
-            print "Queue empty"
-        else:
+        if self.queue.__len__() != 0:
             start = time.time()
             url = self.queue.pop(0)
             text = self.from_url(url, "lxml")
             end = time.time()
             print "Parsing of " + url + " took " + str(end - start) + "s"
             print " Text length: " + str(text.__len__())
+        # else:
+        #     print "Queue empty"
 
+    @timeout(5)
     def from_url(self, url, parser):
         # Source: http://stackoverflow.com/a/24618186
         # on parsers:
@@ -55,6 +57,7 @@ class webparse:
             soup = bs4.BeautifulSoup(html, parser)
         except Exception, e:
             print "ERROR: " + str(e)
+            return ""
         # remove all script and style elements
         for script in soup(["script", "style"]):
             script.extract()    # rip it out
@@ -74,32 +77,37 @@ class webparse:
 
         return text
 
-# main stuff ...
-wp = webparse()
 
-
-@app.route('/api/<pw>', methods=['POST'])
-def api(pw):
+@app.route('/api/queue_urls', methods=['POST'])
+def api_queue_urls():
+    try:
+        rq_json = json.loads(flask.request.data)
+    except Exception, e:
+        return("error parsing json\nException: " + str(e), 404)
+    pw = rq_json["pw"]
     print "api call with >" + pw + "<"
     if not wp.check_pw(pw):
         print "wrong pw"
         return ("wrong pw", 401)
     else:
         print "pw ok"
-        try:
-            urls = json.loads(flask.request.data)
-            for url in urls:
-                wp.add_url(url)
-        except Exception, e:
-            return("Exception: " + e, 404)
+        urls = rq_json["urls"]
+        for url in urls:
+            wp.add_url(url)
         return ("ok", 200)
 
+
+@app.route('/test', methods=['POST'])
+def test():
+    print str(flask.request.data)
+    return ("ok", 200)
+
+
 if __name__ == "__main__":
-    global wp
-    # wp = webparse(pw)
+    wp = webparse()
     wp.start_server()
     # print wp.from_url("http://www.google.com", "lxml")
 
     while (True):
-        time.sleep(2)
+        time.sleep(.1)
         wp.work_on_queue()

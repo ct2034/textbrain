@@ -9,7 +9,7 @@ Tools to fill and read _your textbrain_
 * A cloud based system
 * Based on [mongodb](https://www.mongodb.org/)
 
-## What it is __not__
+## What it is _not_
 * A database
 * A google
 * A file server
@@ -17,3 +17,12 @@ Tools to fill and read _your textbrain_
 
 ## The Idea
 ![The Idea](doc/idea.png)
+
+## to do
+__A. Lot.__
+* implement a visualization option
+* implement some kind of analysis
+* ...
+
+## Contribution
+Always __very__ welcome.

@@ -25,6 +25,7 @@ class webparse:
 
     def connect_to_db(self):
         assert float(pymongo.version) >= 3.2
+        print "connecting"
         # params
         host = self.settings['mongodb']['host']
         port = self.settings['mongodb']['port']
@@ -36,7 +37,15 @@ class webparse:
         client = pymongo.MongoClient(host, port)
         db = client[db]
         collection = db[col]
+        print "connected, creating indizes"
+        self.create_indizes(collection)
+        print "indizes created"
         return collection
+
+    def create_indizes(self, col):
+        exp = self.settings['mongodb']['indexExpiry']
+        # col.create_index( [("url", pymongo.ASCENDING)], background=True, expireAfterSeconds=exp )
+        # col.create_index( [("text", pymongo.TEXT)], background=True )
 
     def start_server(self):
         port = os.getenv("PORT", 8080)
@@ -55,7 +64,18 @@ class webparse:
     def work_on_queue(self):
         if self.queue.__len__() != 0:
             url = self.queue.pop(0)
-            thread.start_new_thread(self.from_url, (url, "lxml"))
+            thread.start_new_thread(self.parse, (url, "lxml"))
+
+    def parse(self, url, parser):
+        query = {"url":url}
+        nr = self.db_collection.find(query).count()
+        assert nr <= 1 #  TODO: take care of multiple entries
+        doc = self.from_url(url, parser)
+        if doc:
+            if nr == 0: #  TODO: find heuristics of reparsing or not 
+                self.db_collection.insert_one(doc)
+            elif nr == 1:
+                self.db_collection.replace_one(query, doc)
 
     # @timeout(10)
     def from_url(self, url, parser):
@@ -97,9 +117,12 @@ class webparse:
             doc = {
                 "url": url,
                 "text": text,
-                "parse_duration_s": (end - start)
+                "parse": {
+                    "duration_s": (end - start),
+                    "last": end
+                }
             }
-            self.db_collection.insert_one(doc)
+        return doc
 
 
 @app.route('/api/queue_urls', methods=['POST'])

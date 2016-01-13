@@ -7,3 +7,4 @@ mongodb:
     pw:     password
     db:     textbrain
     col:    bookmarks
+    indexExpiry: 1000

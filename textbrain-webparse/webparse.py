@@ -24,6 +24,7 @@ class webparse:
         return docs.next()
 
     def connect_to_db(self):
+        assert float(pymongo.version) >= 3.2
         # params
         host = self.settings['mongodb']['host']
         port = self.settings['mongodb']['port']

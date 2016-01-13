@@ -53,24 +53,15 @@ class webparse:
 
     def work_on_queue(self):
         if self.queue.__len__() != 0:
-            start = time.time()
             url = self.queue.pop(0)
-            text = self.from_url(url, "lxml")
-            end = time.time()
-            print "Parsing of " + url + " took " + str(end - start) + "s"
-            print " Text length: " + str(text.__len__())
-            if text:  # only succesfull parses
-                doc = {
-                    "url": url,
-                    "text": text
-                }
-                self.db_collection.insert_one(doc)
+            thread.start_new_thread(self.from_url, (url, "lxml"))
 
-    @timeout(5)
+    # @timeout(10)
     def from_url(self, url, parser):
         # Source: http://stackoverflow.com/a/24618186
         # on parsers:
         # http://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-a-parser
+        start = time.time()
         try:
             html = urllib2.urlopen(url).read()
         except Exception, e:
@@ -98,7 +89,16 @@ class webparse:
             line.split("  "))
         # drop blank lines
         text = '\n'.join(chunk for chunk in chunks if chunk)
-        return text
+        end = time.time()
+        print "URL: " + url[:40]
+        print " Text length: " + str(text.__len__())
+        if text:  # only succesfull parses
+            doc = {
+                "url": url,
+                "text": text,
+                "parse_duration_s": (end - start)
+            }
+            self.db_collection.insert_one(doc)
 
 
 @app.route('/api/queue_urls', methods=['POST'])
